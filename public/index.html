@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Login Section */
+        .login-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .user-type-selector {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+
+        .user-type-option {
+            flex: 1;
+            padding: 12px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .user-type-option.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+            margin: 0 5px;
+        }
+
+        /* Dashboard Section */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px 10px 0 0;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            transition: background-color 0.3s ease;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .author-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .author-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .author-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .author-type-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            color: #2f855a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div class="login-section" id="loginSection">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h1>Library Management System</h1>
+            <p style="margin-bottom: 30px; color: #666;">Access your library account</p>
+
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+
+            <form id="loginForm">
+                <div class="user-type-selector">
+                    <button type="button" class="user-type-option active" data-type="user">
+                        <i class="fas fa-user"></i> User
+                    </button>
+                    <button type="button" class="user-type-option" data-type="admin">
+                        <i class="fas fa-shield-alt"></i> Admin
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username or Email</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Logging in...</p>
+                </div>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px;">
+                Don't have an account? <a href="#" id="registerLink" style="color: #667eea; text-decoration: none;">Register here</a>
+            </p>
+        </div>
+
+        <!-- Registration Section -->
+        <div class="login-section" id="registerSection" style="display: none;">
+            <div class="logo">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1>Register Account</h1>
+            <p style="margin-bottom: 30px; color: #666;">Create a new library account</p>
+
+            <div class="error-message" id="registerErrorMessage"></div>
+            <div class="success-message" id="registerSuccessMessage"></div>
+
+            <form id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regUsername">Username *</label>
+                        <input type="text" id="regUsername" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email *</label>
+                        <input type="email" id="regEmail" name="email" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regPassword">Password *</label>
+                        <input type="password" id="regPassword" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirmPassword">Confirm Password *</label>
+                        <input type="password" id="regConfirmPassword" name="confirmPassword" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regFirstName">First Name *</label>
+                        <input type="text" id="regFirstName" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regLastName">Last Name *</label>
+                        <input type="text" id="regLastName" name="last_name" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regPhone">Phone</label>
+                        <input type="tel" id="regPhone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="regAddress">Address</label>
+                        <input type="text" id="regAddress" name="address">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="registerBtn">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+
+                <div class="loading" id="registerLoading">
+                    <div class="spinner"></div>
+                    <p>Creating account...</p>
+                </div>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px;">
+                Already have an account? <a href="#" id="backToLogin" style="color: #667eea; text-decoration: none;">Back to Login</a>
+            </p>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="dashboard" id="dashboard">
+            <div class="header">
+                <h1><i class="fas fa-book-open"></i> Library Management System</h1>
+                <p id="welcomeMessage">Welcome to your library dashboard</p>
+            </div>
+
+            <div class="user-info">
+                <div>
+                    <h3 id="userName">Welcome!</h3>
+                    <p id="userRole">You are logged in</p>
+                </div>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+
+            <!-- Statistics (Admin only) -->
+            <div class="stats-grid" id="statsGrid" style="display: none;">
+                <div class="stat-card">
+                    <h3 id="totalBooks">-</h3>
+                    <p>Total Books</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalUsers">-</h3>
+                    <p>Total Users</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activeBorrows">-</h3>
+                    <p>Active Borrows</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="overdueBooks">-</h3>
+                    <p>Overdue Books</p>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('books')">
+                    <i class="fas fa-book"></i> Books
+                </div>
+                <div class="tab" onclick="showTab('myBooks')" id="myBooksTabBtn">
+                    <i class="fas fa-user"></i> My Books
+                </div>
+                <div class="tab" onclick="showTab('users')" id="usersTabBtn" style="display: none;">
+                    <i class="fas fa-users"></i> Users
+                </div>
+                <div class="tab" onclick="showTab('transactions')" id="transactionsTabBtn" style="display: none;">
+                    <i class="fas fa-exchange-alt"></i> Transactions
+                </div>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tab-content active" id="booksTab">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 id="booksTabTitle">Book Management</h2>
+                    <button class="btn btn-success" onclick="showAddBookModal()" id="addBookBtn" style="display: none;">
+                        <i class="fas fa-plus"></i> Add Book
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" id="searchBooks" placeholder="Search books by title, author, or ISBN..." 
+                           style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px;">
+                </div>
+
+                <div id="booksList">
+                    <p>Loading books...</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="myBooksTab">
+                <h2>My Borrowed Books</h2>
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
+                    <p style="margin: 0; color: #1976d2; font-weight: 500;">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>My Borrowed Books:</strong> This section shows the books you have borrowed from the library. 
+                        Go to the "Books" tab to borrow more books, or use the "Return" button below to return borrowed books.
+                    </p>
+                    <button class="btn" onclick="loadMyBooks()" style="margin-top: 10px; background: #2196f3; color: white;">
+                        <i class="fas fa-refresh"></i> Refresh My Books
+                    </button>
+                </div>
+                <div id="myBooksList">
+                    <p>Loading your books...</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="usersTab">
+                <h2>User Management</h2>
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
+                    <p style="margin: 0; color: #2e7d32; font-weight: 500;">
+                        <i class="fas fa-users"></i> 
+                        <strong>User Management:</strong> View and manage all library users. 
+                        <button class="btn" onclick="loadUsers()" style="margin-left: 10px; background: #4caf50; color: white;">
+                            <i class="fas fa-refresh"></i> Refresh Users
+                        </button>
+                    </p>
+                </div>
+                <div id="usersList">
+                    <p>Loading users...</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="transactionsTab">
+                <h2>Transaction Management</h2>
+                <div id="transactionsList">
+                    <p>Loading transactions...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Book Modal -->
+    <div class="modal" id="addBookModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Book</h2>
+                <span class="close" onclick="closeModal('addBookModal')">&times;</span>
+            </div>
+            <form id="addBookForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookTitle">Title *</label>
+                        <input type="text" id="bookTitle" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Authors *</label>
+                    <div id="authorsContainer">
+                        <div class="author-row">
+                            <div style="flex: 1;">
+                                <div class="author-type-label">Primary Author (Enter author name)</div>
+                                <input type="text" class="author-input" placeholder="Enter author's full name" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-small btn-success" id="addAuthorBtn">
+                        <i class="fas fa-plus"></i> Add Additional Author
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookIsbn">ISBN</label>
+                        <input type="text" id="bookIsbn">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookPublisher">Publisher</label>
+                        <input type="text" id="bookPublisher">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookYear">Publication Year</label>
+                        <input type="number" id="bookYear" min="1000" max="2024">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookGenre">Genre</label>
+                        <input type="text" id="bookGenre">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bookDescription">Description</label>
+                    <textarea id="bookDescription" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; resize: vertical;"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookCopies">Total Copies *</label>
+                        <input type="number" id="bookCopies" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookLocation">Location</label>
+                        <input type="text" id="bookLocation">
+                    </div>
+                </div>
+                <button type="submit" class="btn">Add Book</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let authToken = null;
+        let currentUserType = 'user';
+        let authorCounter = 1;
+
+        // User type selection
+        document.querySelectorAll('.user-type-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.user-type-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                currentUserType = option.dataset.type;
+                
+                const loginBtn = document.getElementById('loginBtn');
+                if (currentUserType === 'admin') {
+                    loginBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Login as Admin';
+                } else {
+                    loginBtn.innerHTML = '<i class="fas fa-user"></i> Login as User';
+                }
+            });
+        });
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            showLoading(true);
+            hideMessages();
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.user.user_type !== currentUserType) {
+                        showError(`Please login as ${currentUserType === 'admin' ? 'Admin' : 'User'}`);
+                        showLoading(false);
+                        return;
+                    }
+
+                    authToken = data.token;
+                    currentUser = data.user;
+                    
+                    console.log('Login successful - user data:', currentUser);
+                    console.log('User type:', currentUser.user_type);
+                    
+                    // Store in localStorage
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('userInfo', JSON.stringify(currentUser));
+                    
+                    showSuccess('Login successful!');
+                    
+                    setTimeout(() => {
+                        showDashboard();
+                    }, 1000);
+
+                } else {
+                    showError(data.error || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Network error. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Register link
+        document.getElementById('registerLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            showRegisterForm();
+        });
+
+        // Back to login link
+        document.getElementById('backToLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            showLoginForm();
+        });
+
+        // Registration form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                showRegisterError('Passwords do not match');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showRegisterError('Password must be at least 6 characters long');
+                return;
+            }
+
+            const formData = {
+                username: document.getElementById('regUsername').value,
+                email: document.getElementById('regEmail').value,
+                password: password,
+                first_name: document.getElementById('regFirstName').value,
+                last_name: document.getElementById('regLastName').value,
+                phone: document.getElementById('regPhone').value,
+                address: document.getElementById('regAddress').value
+            };
+
+            showRegisterLoading(true);
+            hideRegisterMessages();
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showRegisterSuccess('Registration successful! You can now login.');
+                    setTimeout(() => {
+                        showLoginForm();
+                    }, 2000);
+                } else {
+                    showRegisterError(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showRegisterError('Network error. Please try again.');
+            } finally {
+                showRegisterLoading(false);
+            }
+        });
+
+        function showDashboard() {
+            console.log('Showing dashboard for user:', currentUser);
+            console.log('User type:', currentUser.user_type);
+            
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            
+            // Update UI based on user type
+            if (currentUser.user_type === 'admin') {
+                document.getElementById('welcomeMessage').textContent = 'Manage books and users';
+                document.getElementById('userRole').textContent = 'You are logged in as an administrator';
+                document.getElementById('booksTabTitle').textContent = 'Book Management';
+                document.getElementById('statsGrid').style.display = 'grid';
+                document.getElementById('addBookBtn').style.display = 'block';
+                document.getElementById('usersTab').style.display = 'block';
+                document.getElementById('transactionsTab').style.display = 'none'; // Hide Transactions tab
+                document.getElementById('myBooksTab').style.display = 'none'; // Hide My Books for admins
+                loadStatistics();
+            } else {
+                document.getElementById('welcomeMessage').textContent = 'Browse and manage your borrowed books';
+                document.getElementById('userRole').textContent = 'You are logged in as a user';
+                document.getElementById('booksTabTitle').textContent = 'Browse Books';
+                document.getElementById('statsGrid').style.display = 'none';
+                document.getElementById('addBookBtn').style.display = 'none';
+                document.getElementById('usersTab').style.display = 'none';
+                document.getElementById('transactionsTab').style.display = 'none';
+                document.getElementById('myBooksTab').style.display = 'block'; // Show My Books for users
+            }
+            
+            document.getElementById('userName').textContent = `Welcome, ${currentUser.first_name}!`;
+            
+            // Load initial data
+            console.log('Loading initial data...');
+            loadBooks();
+            if (currentUser.user_type === 'user') {
+                console.log('Loading my books for user...');
+                loadMyBooks();
+            } else if (currentUser.user_type === 'admin') {
+                console.log('Admin user - loading statistics...');
+                // Statistics are already loaded in the admin section above
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            
+            // Clear all session data
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userInfo');
+            localStorage.removeItem('userType');
+            
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('loginForm').reset();
+            hideMessages();
+        }
+
+        function showTab(tabName) {
+            console.log('=== SWITCHING TO TAB:', tabName, '===');
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Load data based on tab
+            switch(tabName) {
+                case 'books':
+                    console.log('Loading books...');
+                    loadBooks();
+                    break;
+                case 'myBooks':
+                    if (currentUser.user_type === 'user') {
+                        console.log('Loading my books...');
+                        loadMyBooks();
+                    } else {
+                        console.log('My Books not available for admins');
+                    }
+                    break;
+                case 'users':
+                    if (currentUser.user_type === 'admin') {
+                        console.log('Loading users...');
+                        loadUsers();
+                    } else {
+                        console.log('Users tab not available for regular users');
+                    }
+                    break;
+                case 'transactions':
+                    console.log('Transactions tab is disabled');
+                    break;
+            }
+        }
+
+        async function loadBooks() {
+            console.log('Loading books...');
+            try {
+                const response = await fetch('/api/books');
+                console.log('Books response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch books: ${response.status}`);
+                }
+                
+                const books = await response.json();
+                console.log('Books data:', books);
+                
+                const booksList = document.getElementById('booksList');
+                booksList.innerHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Authors</th>
+                                <th>ISBN</th>
+                                <th>Available</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${books.map(book => `
+                                <tr>
+                                    <td>${book.title}</td>
+                                    <td>${book.authors || 'No authors'}</td>
+                                    <td>${book.isbn || 'N/A'}</td>
+                                    <td>${book.available_copies}/${book.total_copies}</td>
+                                    <td>${book.location || 'N/A'}</td>
+                                    <td>
+                                        ${currentUser.user_type === 'admin' ? `
+                                            <button class="btn btn-small" onclick="editBook(${book.book_id})">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </button>
+                                            <button class="btn btn-small btn-danger" onclick="deleteBook(${book.book_id})">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        ` : `
+                                            <button class="btn btn-small btn-success" onclick="borrowBook(${book.book_id})" 
+                                                    ${book.available_copies <= 0 ? 'disabled' : ''}>
+                                                <i class="fas fa-book"></i> ${book.available_copies <= 0 ? 'Not Available' : 'Borrow'}
+                                            </button>
+                                        `}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading books:', error);
+                document.getElementById('booksList').innerHTML = '<p>Error loading books. Please try again.</p>';
+            }
+        }
+
+        async function loadMyBooks() {
+            if (currentUser.user_type !== 'user') {
+                console.log('Not a user, skipping my books load');
+                return;
+            }
+            
+            // Only load for regular users, not admins
+            if (currentUser.user_type === 'admin') {
+                console.log('Admin user - My Books not applicable');
+                return;
+            }
+            
+            console.log('=== LOADING MY BOOKS ===');
+            console.log('Current user:', currentUser);
+            console.log('Auth token present:', !!authToken);
+            console.log('Auth token value:', authToken ? authToken.substring(0, 20) + '...' : 'None');
+            
+            try {
+                console.log('Making API call to /api/transactions/my-books...');
+                const response = await fetch('/api/transactions/my-books', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                console.log('My books response status:', response.status);
+                console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('My books error response:', errorText);
+                    throw new Error(`Failed to fetch books: ${response.status} - ${errorText}`);
+                }
+                
+                const books = await response.json();
+                console.log('My books data received:', books);
+                console.log('Number of books:', books.length);
+                
+                const myBooksList = document.getElementById('myBooksList');
+                
+                if (books.length === 0) {
+                    console.log('No books found - showing empty state');
+                    myBooksList.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            <i class="fas fa-book" style="font-size: 3rem; margin-bottom: 20px; color: #ccc;"></i>
+                            <h3>No Books Borrowed</h3>
+                            <p>You haven't borrowed any books yet. Browse the books section to find something interesting!</p>
+                            <button class="btn" onclick="showTab('books')" style="margin-top: 20px;">
+                                <i class="fas fa-book"></i> Browse Books
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                myBooksList.innerHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>ISBN</th>
+                                <th>Borrowed Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${books.map(book => `
+                                <tr>
+                                    <td>${book.title}</td>
+                                    <td>${book.author || 'N/A'}</td>
+                                    <td>${book.isbn || 'N/A'}</td>
+                                    <td>${new Date(book.transaction_date).toLocaleDateString()}</td>
+                                    <td>${new Date(book.due_date).toLocaleDateString()}</td>
+                                    <td>
+                                        <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; 
+                                                    ${book.current_status === 'overdue' ? 'background: #fed7d7; color: #c53030;' : 
+                                                      book.current_status === 'active' ? 'background: #c6f6d5; color: #2f855a;' : 
+                                                      'background: #e2e8f0; color: #4a5568;'}">
+                                            ${book.current_status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        ${book.current_status === 'active' ? `
+                                            <button class="btn btn-small btn-danger" onclick="returnBook(${book.transaction_id})">
+                                                <i class="fas fa-undo"></i> Return
+                                            </button>
+                                        ` : book.current_status === 'returned' ? `
+                                            <span style="color: #666; font-style: italic;">Returned</span>
+                                        ` : ''}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading my books:', error);
+                document.getElementById('myBooksList').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #c53030;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                        <h3>Error Loading Books</h3>
+                        <p>There was an error loading your borrowed books. Please try again.</p>
+                        <button class="btn" onclick="loadMyBooks()" style="margin-top: 20px;">
+                            <i class="fas fa-refresh"></i> Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadUsers() {
+            if (currentUser.user_type !== 'admin') {
+                console.log('Not an admin, skipping users load');
+                return;
+            }
+            
+            console.log('=== LOADING USERS ===');
+            console.log('Current user:', currentUser);
+            console.log('Auth token present:', !!authToken);
+            
+            try {
+                const response = await fetch('/api/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                console.log('Users response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Users error response:', errorText);
+                    throw new Error(`Failed to fetch users: ${response.status}`);
+                }
+                
+                const users = await response.json();
+                console.log('Users data received:', users);
+                console.log('Number of users:', users.length);
+                
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Type</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${users.map(user => `
+                                <tr>
+                                    <td>${user.username}</td>
+                                    <td>${user.first_name} ${user.last_name}</td>
+                                    <td>${user.email}</td>
+                                    <td>
+                                        <span class="badge ${user.user_type === 'admin' ? 'badge-danger' : 'badge-success'}">
+                                            ${user.user_type}
+                                        </span>
+                                    </td>
+                                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('usersList').innerHTML = '<p>Error loading users. Please try again.</p>';
+            }
+        }
+
+        async function loadTransactions() {
+            if (currentUser.user_type !== 'admin') return;
+            
+            try {
+                const response = await fetch('/api/admin/transactions', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const transactions = await response.json();
+                
+                const transactionsList = document.getElementById('transactionsList');
+                transactionsList.innerHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Book</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${transactions.map(transaction => `
+                                <tr>
+                                    <td>${transaction.username}</td>
+                                    <td>${transaction.title}</td>
+                                    <td>${transaction.transaction_type}</td>
+                                    <td>${new Date(transaction.transaction_date).toLocaleDateString()}</td>
+                                    <td>${transaction.due_date ? new Date(transaction.due_date).toLocaleDateString() : 'N/A'}</td>
+                                    <td>
+                                        <span class="badge ${transaction.current_status === 'overdue' ? 'badge-danger' : 'badge-success'}">
+                                            ${transaction.current_status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                document.getElementById('transactionsList').innerHTML = '<p>Error loading transactions. Please try again.</p>';
+            }
+        }
+
+        async function loadStatistics() {
+            if (currentUser.user_type !== 'admin') return;
+            
+            try {
+                const response = await fetch('/api/admin/statistics', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const stats = await response.json();
+                
+                document.getElementById('totalBooks').textContent = stats.totalBooks;
+                document.getElementById('totalUsers').textContent = stats.totalUsers;
+                document.getElementById('activeBorrows').textContent = stats.activeBorrows;
+                document.getElementById('overdueBooks').textContent = stats.overdueBooks;
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        // Author management functions
+        function addAuthorRow() {
+            const container = document.getElementById('authorsContainer');
+            const authorRow = document.createElement('div');
+            authorRow.className = 'author-row';
+            authorRow.innerHTML = `
+                <div style="flex: 1;">
+                    <div class="author-type-label">Additional Author (Enter author name)</div>
+                    <input type="text" class="author-input" placeholder="Enter author's full name" required>
+                </div>
+                <button type="button" class="btn btn-small btn-danger" onclick="removeAuthorRow(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(authorRow);
+        }
+
+        function removeAuthorRow(button) {
+            const authorRow = button.closest('.author-row');
+            authorRow.remove();
+        }
+
+        function getSelectedAuthors() {
+            const container = document.getElementById('authorsContainer');
+            const authors = [];
+            
+            const authorInputs = container.querySelectorAll('.author-input');
+            authorInputs.forEach((input, index) => {
+                if (input.value.trim()) {
+                    const fullName = input.value.trim();
+                    const nameParts = fullName.split(' ');
+                    const firstName = nameParts[0];
+                    const lastName = nameParts.slice(1).join(' ') || '';
+                    
+                    authors.push({
+                        first_name: firstName,
+                        last_name: lastName,
+                        author_order: index + 1,
+                        is_new: true
+                    });
+                }
+            });
+            
+            return authors;
+        }
+
+        // Modal functions
+        function showAddBookModal() {
+            if (currentUser.user_type !== 'admin') {
+                showError('Only administrators can add books');
+                return;
+            }
+            document.getElementById('addBookModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Book management functions
+        document.getElementById('addBookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (currentUser.user_type !== 'admin') {
+                showError('Only administrators can add books');
+                return;
+            }
+            
+            const selectedAuthors = getSelectedAuthors();
+            if (selectedAuthors.length === 0) {
+                showError('Please enter at least one author');
+                return;
+            }
+            
+            const formData = {
+                title: document.getElementById('bookTitle').value,
+                authors: selectedAuthors,
+                isbn: document.getElementById('bookIsbn').value,
+                publisher: document.getElementById('bookPublisher').value,
+                publication_year: document.getElementById('bookYear').value,
+                genre: document.getElementById('bookGenre').value,
+                description: document.getElementById('bookDescription').value,
+                total_copies: document.getElementById('bookCopies').value,
+                location: document.getElementById('bookLocation').value
+            };
+
+            try {
+                const response = await fetch('/api/admin/books', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('Book added successfully!');
+                    closeModal('addBookModal');
+                    document.getElementById('addBookForm').reset();
+                    loadBooks();
+                } else {
+                    showError(data.error || 'Failed to add book');
+                }
+            } catch (error) {
+                console.error('Error adding book:', error);
+                showError('Network error. Please try again.');
+            }
+        });
+
+        async function borrowBook(bookId) {
+            console.log('Borrowing book with ID:', bookId);
+            console.log('Auth token present:', !!authToken);
+            
+            try {
+                const response = await fetch('/api/transactions/borrow', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ book_id: bookId })
+                });
+
+                console.log('Borrow response status:', response.status);
+                const data = await response.json();
+                console.log('Borrow response data:', data);
+
+                if (response.ok) {
+                    showSuccess('Book borrowed successfully!');
+                    loadBooks();
+                    // Auto-switch to My Books for convenience
+                    const myTab = document.getElementById('myBooksTabBtn');
+                    if (myTab && currentUser.user_type === 'user') {
+                        showTab('myBooks');
+                    }
+                    loadMyBooks();
+                } else {
+                    showError(data.error || 'Failed to borrow book');
+                }
+            } catch (error) {
+                console.error('Error borrowing book:', error);
+                showError('Network error. Please try again.');
+            }
+        }
+
+        async function returnBook(transactionId) {
+            if (!confirm('Are you sure you want to return this book?')) return;
+            
+            console.log('Returning book with transaction ID:', transactionId);
+            console.log('Auth token:', authToken ? 'Present' : 'Missing');
+            
+            try {
+                const response = await fetch('/api/transactions/return', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ transaction_id: transactionId })
+                });
+
+                console.log('Return book response status:', response.status);
+                const data = await response.json();
+                console.log('Return book response data:', data);
+
+                if (response.ok) {
+                    showSuccess('Book returned successfully!');
+                    // Switch to My Books tab to reflect change
+                    const myTab = document.getElementById('myBooksTabBtn');
+                    if (myTab && currentUser.user_type === 'user') {
+                        showTab('myBooks');
+                    }
+                    loadBooks();
+                    loadMyBooks();
+                } else {
+                    const message = data && data.error ? data.error : 'Failed to return book';
+                    showError(message);
+                }
+            } catch (error) {
+                console.error('Error returning book:', error);
+                showError('Network error. Please try again.');
+            }
+        }
+
+        async function editBook(bookId) {
+            // This function would open an edit modal for admins
+            // For now, just show a message
+            showSuccess('Edit book functionality - Coming soon!');
+        }
+
+        async function deleteBook(bookId) {
+            if (currentUser.user_type !== 'admin') {
+                showError('Only administrators can delete books');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to delete this book?')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/books/${bookId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('Book deleted successfully!');
+                    loadBooks();
+                } else {
+                    showError(data.error || 'Failed to delete book');
+                }
+            } catch (error) {
+                console.error('Error deleting book:', error);
+                showError('Network error. Please try again.');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('addAuthorBtn').addEventListener('click', addAuthorRow);
+
+        // Utility functions
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('loginBtn').disabled = show;
+        }
+
+        function showRegisterForm() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'block';
+        }
+
+        function showLoginForm() {
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+        }
+
+        function showRegisterError(message) {
+            const errorDiv = document.getElementById('registerErrorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showRegisterSuccess(message) {
+            const successDiv = document.getElementById('registerSuccessMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function hideRegisterMessages() {
+            document.getElementById('registerErrorMessage').style.display = 'none';
+            document.getElementById('registerSuccessMessage').style.display = 'none';
+        }
+
+        function showRegisterLoading(show) {
+            document.getElementById('registerLoading').style.display = show ? 'block' : 'none';
+            document.getElementById('registerBtn').disabled = show;
+        }
+
+        // Check if user is already logged in
+        window.addEventListener('load', () => {
+            console.log('=== PAGE LOADED ===');
+            const token = localStorage.getItem('authToken');
+            const userInfo = localStorage.getItem('userInfo');
+            
+            console.log('Page loaded - checking for existing session');
+            console.log('Token present:', !!token);
+            console.log('User info present:', !!userInfo);
+            
+            if (token && userInfo) {
+                authToken = token;
+                currentUser = JSON.parse(userInfo);
+                console.log('Restored user session:', currentUser);
+                showDashboard();
+            } else {
+                console.log('No valid session found, clearing storage');
+                // Clear any invalid session data
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userInfo');
+                localStorage.removeItem('userType');
+            }
+            
+            // Test API call
+            console.log('Testing API call...');
+            fetch('/api/books')
+                .then(response => response.json())
+                .then(books => {
+                    console.log('API test successful, books found:', books.length);
+                })
+                .catch(error => {
+                    console.error('API test failed:', error);
+                });
+        });
+    </script>
+</body>
+</html>

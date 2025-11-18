@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System - Admin Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .header p {
+            text-align: center;
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .auth-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+        }
+
+        .admin-dashboard {
+            display: none;
+        }
+
+        .admin-dashboard.active {
+            display: block;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .admin-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            color: #4a5568;
+            font-size: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px 20px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .data-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #4a5568;
+        }
+
+        .close {
+            color: #a0aec0;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #4a5568;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-returned {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .status-overdue {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .user-info.active {
+            display: block;
+        }
+
+        /* Multiple Authors Styles */
+        .author-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .author-input, .author-select {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .author-input:focus, .author-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .author-type-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .remove-author {
+            padding: 8px 12px;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .remove-author:hover {
+            background: #c53030;
+        }
+
+        #addAuthorBtn, #addEditAuthorBtn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #38a169;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        #addAuthorBtn:hover, #addEditAuthorBtn:hover {
+            background: #2f855a;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> Library Management System - Admin Portal</h1>
+            <p>Manage books, users, and transactions</p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="auth-section" id="authSection">
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username or Email</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+
+        <!-- User Info Section -->
+        <div class="user-info" id="userInfo">
+            <h2>Welcome, <span id="userName"></span>!</h2>
+            <p>You are logged in as an administrator.</p>
+            <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div class="admin-dashboard" id="adminDashboard">
+            <!-- Statistics Dashboard -->
+            <div class="dashboard-grid" id="statisticsGrid">
+                <div class="stat-card">
+                    <h3 id="totalBooks">-</h3>
+                    <p>Total Books</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalUsers">-</h3>
+                    <p>Total Users</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activeBorrows">-</h3>
+                    <p>Active Borrows</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="overdueBooks">-</h3>
+                    <p>Overdue Books</p>
+                </div>
+            </div>
+
+            <!-- Main Admin Section -->
+            <div class="admin-section">
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('books')">Books</div>
+                    <div class="tab" onclick="showTab('users')">Users</div>
+                    <div class="tab" onclick="showTab('transactions')">Transactions</div>
+                </div>
+
+                <!-- Books Tab -->
+                <div class="tab-content active" id="books">
+                    <div class="section-header">
+                        <h2>Book Management</h2>
+                        <button class="btn btn-small" onclick="openAddBookModal()">
+                            <i class="fas fa-plus"></i> Add Book
+                        </button>
+                    </div>
+                    <div id="booksTable">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading books...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Tab -->
+                <div class="tab-content" id="users">
+                    <div class="section-header">
+                        <h2>User Management</h2>
+                    </div>
+                    <div id="usersTable">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading users...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div class="tab-content" id="transactions">
+                    <div class="section-header">
+                        <h2>Transaction Management</h2>
+                    </div>
+                    <div id="transactionsTable">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading transactions...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Book Modal -->
+    <div id="addBookModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Book</h3>
+                <span class="close" onclick="closeModal('addBookModal')">&times;</span>
+            </div>
+            <form id="addBookForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookTitle">Title *</label>
+                        <input type="text" id="bookTitle" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bookAuthors">Authors *</label>
+                    <div id="authorsContainer">
+                        <div class="author-row">
+                            <div style="flex: 1;">
+                                <div class="author-type-label">Primary Author (Enter new author name)</div>
+                                <input type="text" class="author-input" id="primaryAuthor" placeholder="Enter author's full name" required>
+                            </div>
+                            <button type="button" class="btn btn-small btn-danger remove-author" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-small btn-success" id="addAuthorBtn">
+                        <i class="fas fa-plus"></i> Add Additional Author
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookIsbn">ISBN</label>
+                        <input type="text" id="bookIsbn">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookPublisher">Publisher</label>
+                        <input type="text" id="bookPublisher">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookYear">Publication Year</label>
+                        <input type="number" id="bookYear" min="1000" max="2024">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookGenre">Genre</label>
+                        <input type="text" id="bookGenre">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookCopies">Total Copies *</label>
+                        <input type="number" id="bookCopies" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookLocation">Location</label>
+                        <input type="text" id="bookLocation">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bookDescription">Description</label>
+                    <textarea id="bookDescription" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Add Book</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addBookModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Book Modal -->
+    <div id="editBookModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Book</h3>
+                <span class="close" onclick="closeModal('editBookModal')">&times;</span>
+            </div>
+            <form id="editBookForm">
+                <input type="hidden" id="editBookId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editBookTitle">Title *</label>
+                        <input type="text" id="editBookTitle" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editBookAuthors">Authors *</label>
+                    <div id="editAuthorsContainer">
+                        <div class="author-row">
+                            <div style="flex: 1;">
+                                <div class="author-type-label">Primary Author (Enter new author name)</div>
+                                <input type="text" class="author-input" id="editPrimaryAuthor" placeholder="Enter author's full name" required>
+                            </div>
+                            <button type="button" class="btn btn-small btn-danger remove-author" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-small btn-success" id="addEditAuthorBtn">
+                        <i class="fas fa-plus"></i> Add Additional Author
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editBookIsbn">ISBN</label>
+                        <input type="text" id="editBookIsbn">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBookPublisher">Publisher</label>
+                        <input type="text" id="editBookPublisher">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editBookYear">Publication Year</label>
+                        <input type="number" id="editBookYear" min="1000" max="2024">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBookGenre">Genre</label>
+                        <input type="text" id="editBookGenre">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editBookCopies">Total Copies *</label>
+                        <input type="number" id="editBookCopies" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editBookLocation">Location</label>
+                        <input type="text" id="editBookLocation">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editBookDescription">Description</label>
+                    <textarea id="editBookDescription" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Update Book</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editBookModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let authToken = null;
+        let authorsList = []; // Store available authors
+        let authorCounter = 1;
+
+        // Multiple Authors Functionality
+        function loadAuthors() {
+            // This would typically fetch from an API endpoint
+            // For now, we'll use a static list
+            authorsList = [
+                { author_id: 1, first_name: 'Robert', last_name: 'Martin' },
+                { author_id: 2, first_name: 'David', last_name: 'Thomas' },
+                { author_id: 3, first_name: 'Harper', last_name: 'Lee' },
+                { author_id: 4, first_name: 'Jane', last_name: 'Austen' },
+                { author_id: 5, first_name: 'F. Scott', last_name: 'Fitzgerald' },
+                { author_id: 6, first_name: 'Paulo', last_name: 'Coelho' },
+                { author_id: 7, first_name: 'George', last_name: 'Orwell' },
+                { author_id: 8, first_name: 'C.S.', last_name: 'Lewis' },
+                { author_id: 9, first_name: 'J.R.R.', last_name: 'Tolkien' }
+            ];
+        }
+
+        function getAuthorOptions() {
+            return authorsList.map(author => 
+                `<option value="${author.author_id}">${author.first_name} ${author.last_name}</option>`
+            ).join('');
+        }
+
+        function addAuthorRow(containerId, isEdit = false) {
+            const container = document.getElementById(containerId);
+            const authorRow = document.createElement('div');
+            authorRow.className = 'author-row';
+            authorRow.innerHTML = `
+                <div style="flex: 1;">
+                    <div class="author-type-label">Additional Author (Enter author name)</div>
+                    <input type="text" class="author-input" placeholder="Enter author's full name" required>
+                </div>
+                <button type="button" class="btn btn-small btn-danger remove-author">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(authorRow);
+            authorCounter++;
+            
+            // Show remove buttons if more than one author
+            updateRemoveButtons(containerId);
+        }
+
+        function removeAuthorRow(button) {
+            const authorRow = button.closest('.author-row');
+            const container = authorRow.parentElement;
+            authorRow.remove();
+            updateRemoveButtons(container.id);
+        }
+
+        function updateRemoveButtons(containerId) {
+            const container = document.getElementById(containerId);
+            const authorRows = container.querySelectorAll('.author-row');
+            const removeButtons = container.querySelectorAll('.remove-author');
+            
+            // Hide remove button for the first row (primary author)
+            removeButtons.forEach((button, index) => {
+                if (index === 0) {
+                    button.style.display = 'none'; // Primary author can't be removed
+                } else {
+                    button.style.display = authorRows.length > 1 ? 'inline-block' : 'none';
+                }
+            });
+        }
+
+        function getSelectedAuthors(containerId) {
+            const container = document.getElementById(containerId);
+            const authors = [];
+            
+            // Get all author inputs (both primary and additional)
+            const authorInputs = container.querySelectorAll('.author-input');
+            authorInputs.forEach((input, index) => {
+                if (input.value.trim()) {
+                    const fullName = input.value.trim();
+                    const nameParts = fullName.split(' ');
+                    const firstName = nameParts[0];
+                    const lastName = nameParts.slice(1).join(' ') || '';
+                    
+                    authors.push({
+                        first_name: firstName,
+                        last_name: lastName,
+                        author_order: index + 1,
+                        is_new: true
+                    });
+                }
+            });
+            
+            return authors;
+        }
+
+        function populateAuthors(containerId, bookAuthors = []) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            if (bookAuthors.length === 0) {
+                // Add primary author input
+                const primaryRow = document.createElement('div');
+                primaryRow.className = 'author-row';
+                primaryRow.innerHTML = `
+                    <div style="flex: 1;">
+                        <div class="author-type-label">Primary Author (Enter author name)</div>
+                        <input type="text" class="author-input" placeholder="Enter author's full name" required>
+                    </div>
+                    <button type="button" class="btn btn-small btn-danger remove-author" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(primaryRow);
+            } else {
+                // Add all authors as text inputs
+                bookAuthors.forEach((author, index) => {
+                    const authorRow = document.createElement('div');
+                    authorRow.className = 'author-row';
+                    const fullName = `${author.first_name} ${author.last_name}`;
+                    const labelText = index === 0 ? 'Primary Author (Enter author name)' : 'Additional Author (Enter author name)';
+                    
+                    authorRow.innerHTML = `
+                        <div style="flex: 1;">
+                            <div class="author-type-label">${labelText}</div>
+                            <input type="text" class="author-input" value="${fullName}" placeholder="Enter author's full name" required>
+                        </div>
+                        <button type="button" class="btn btn-small btn-danger remove-author" ${index === 0 ? 'style="display: none;"' : ''}>
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    container.appendChild(authorRow);
+                });
+            }
+        }
+
+        // Initialize authors and event listeners
+        window.addEventListener('load', () => {
+            loadAuthors();
+            
+            // Add author button event listeners
+            document.getElementById('addAuthorBtn').addEventListener('click', () => {
+                addAuthorRow('authorsContainer');
+            });
+
+            document.getElementById('addEditAuthorBtn').addEventListener('click', () => {
+                addAuthorRow('editAuthorsContainer', true);
+            });
+
+            // Remove author event delegation
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.remove-author')) {
+                    removeAuthorRow(e.target.closest('.remove-author'));
+                }
+            });
+
+            const token = localStorage.getItem('adminToken');
+            if (token) {
+                authToken = token;
+                // Verify token and get admin info
+                fetch('/api/admin/statistics', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        showAdminInterface();
+                        loadStatistics();
+                        loadBooks();
+                        loadUsers();
+                        loadTransactions();
+                    } else {
+                        localStorage.removeItem('adminToken');
+                    }
+                })
+                .catch(() => {
+                    localStorage.removeItem('adminToken');
+                });
+            }
+        });
+
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        function showAdminInterface() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'block';
+        }
+
+        function hideAdminInterface() {
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'none';
+        }
+
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activate the corresponding tab button
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach((tab, index) => {
+                if ((tabName === 'books' && index === 0) ||
+                    (tabName === 'users' && index === 1) ||
+                    (tabName === 'transactions' && index === 2)) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.user.user_type === 'admin') {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('adminToken', authToken);
+                    localStorage.setItem('currentAdmin', JSON.stringify(currentUser));
+                    
+                    document.getElementById('userName').textContent = currentUser.first_name + ' ' + currentUser.last_name;
+                    showAdminInterface();
+                    loadStatistics();
+                    loadBooks();
+                    loadUsers();
+                    loadTransactions();
+                    showAlert('Admin login successful!');
+                } else {
+                    showAlert('Admin access required.', 'error');
+                }
+            } catch (error) {
+                showAlert('Login failed. Please try again.', 'error');
+            }
+        });
+
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/admin/statistics', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const stats = await response.json();
+                
+                document.getElementById('totalBooks').textContent = stats.totalBooks;
+                document.getElementById('totalUsers').textContent = stats.totalUsers;
+                document.getElementById('activeBorrows').textContent = stats.activeBorrows;
+                document.getElementById('overdueBooks').textContent = stats.overdueBooks;
+            } catch (error) {
+                console.error('Failed to load statistics:', error);
+            }
+        }
+
+        async function loadBooks() {
+            try {
+                const response = await fetch('/api/books');
+                const books = await response.json();
+                displayBooks(books);
+            } catch (error) {
+                document.getElementById('booksTable').innerHTML = '<div class="alert alert-error">Failed to load books.</div>';
+            }
+        }
+
+        function displayBooks(books) {
+            const booksTable = document.getElementById('booksTable');
+            
+            if (books.length === 0) {
+                booksTable.innerHTML = '<div class="alert alert-success">No books found.</div>';
+                return;
+            }
+
+            const booksHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>ISBN</th>
+                            <th>Available</th>
+                            <th>Location</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${books.map(book => `
+                            <tr>
+                                <td>${book.title}</td>
+                                <td>${book.authors || 'No authors'}</td>
+                                <td>${book.isbn || 'N/A'}</td>
+                                <td>${book.available_copies}/${book.total_copies}</td>
+                                <td>${book.location || 'N/A'}</td>
+                                <td>
+                                    <button class="btn btn-small" onclick="editBook(${book.book_id})">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-small btn-danger" onclick="deleteBook(${book.book_id})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            booksTable.innerHTML = booksHTML;
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const users = await response.json();
+                displayUsers(users);
+            } catch (error) {
+                document.getElementById('usersTable').innerHTML = '<div class="alert alert-error">Failed to load users.</div>';
+            }
+        }
+
+        function displayUsers(users) {
+            const usersTable = document.getElementById('usersTable');
+            
+            if (users.length === 0) {
+                usersTable.innerHTML = '<div class="alert alert-success">No users found.</div>';
+                return;
+            }
+
+            const usersHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Type</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(user => `
+                            <tr>
+                                <td>${user.username}</td>
+                                <td>${user.first_name} ${user.last_name}</td>
+                                <td>${user.email}</td>
+                                <td>${user.phone || 'N/A'}</td>
+                                <td>
+                                    <span class="status-badge ${user.user_type === 'admin' ? 'status-active' : 'status-returned'}">
+                                        ${user.user_type}
+                                    </span>
+                                </td>
+                                <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            usersTable.innerHTML = usersHTML;
+        }
+
+        async function loadTransactions() {
+            try {
+                const response = await fetch('/api/admin/transactions', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const transactions = await response.json();
+                displayTransactions(transactions);
+            } catch (error) {
+                document.getElementById('transactionsTable').innerHTML = '<div class="alert alert-error">Failed to load transactions.</div>';
+            }
+        }
+
+        function displayTransactions(transactions) {
+            const transactionsTable = document.getElementById('transactionsTable');
+            
+            if (transactions.length === 0) {
+                transactionsTable.innerHTML = '<div class="alert alert-success">No transactions found.</div>';
+                return;
+            }
+
+            const transactionsHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Book</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Days Overdue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${transactions.map(transaction => `
+                            <tr>
+                                <td>${transaction.first_name} ${transaction.last_name}</td>
+                                <td>${transaction.title}</td>
+                                <td>${transaction.transaction_type}</td>
+                                <td>${new Date(transaction.transaction_date).toLocaleDateString()}</td>
+                                <td>${transaction.due_date ? new Date(transaction.due_date).toLocaleDateString() : 'N/A'}</td>
+                                <td>
+                                    <span class="status-badge status-${transaction.current_status}">
+                                        ${transaction.current_status}
+                                    </span>
+                                </td>
+                                <td>${transaction.days_overdue > 0 ? transaction.days_overdue : '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            transactionsTable.innerHTML = transactionsHTML;
+        }
+
+        function openAddBookModal() {
+            document.getElementById('addBookModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Add book form
+        document.getElementById('addBookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const selectedAuthors = getSelectedAuthors('authorsContainer');
+            if (selectedAuthors.length === 0) {
+                alert('Please enter at least one author');
+                return;
+            }
+            
+            const formData = {
+                title: document.getElementById('bookTitle').value,
+                authors: selectedAuthors,
+                isbn: document.getElementById('bookIsbn').value,
+                publisher: document.getElementById('bookPublisher').value,
+                publication_year: document.getElementById('bookYear').value,
+                genre: document.getElementById('bookGenre').value,
+                description: document.getElementById('bookDescription').value,
+                total_copies: document.getElementById('bookCopies').value,
+                location: document.getElementById('bookLocation').value
+            };
+
+            try {
+                const response = await fetch('/api/admin/books', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('Book added successfully!');
+                    closeModal('addBookModal');
+                    document.getElementById('addBookForm').reset();
+                    loadBooks();
+                    loadStatistics();
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Failed to add book. Please try again.', 'error');
+            }
+        });
+
+        async function editBook(bookId) {
+            try {
+                const response = await fetch(`/api/books/${bookId}`);
+                const book = await response.json();
+
+                // Populate edit form
+                document.getElementById('editBookId').value = book.book_id;
+                document.getElementById('editBookTitle').value = book.title;
+                document.getElementById('editBookIsbn').value = book.isbn || '';
+                document.getElementById('editBookPublisher').value = book.publisher || '';
+                document.getElementById('editBookYear').value = book.publication_year || '';
+                document.getElementById('editBookGenre').value = book.genre || '';
+                document.getElementById('editBookDescription').value = book.description || '';
+                document.getElementById('editBookCopies').value = book.total_copies;
+                document.getElementById('editBookLocation').value = book.location || '';
+
+                // Populate authors
+                if (book.authors && book.authors.length > 0) {
+                    populateAuthors('editAuthorsContainer', book.authors);
+                } else {
+                    populateAuthors('editAuthorsContainer');
+                }
+
+                document.getElementById('editBookModal').style.display = 'block';
+            } catch (error) {
+                showAlert('Failed to load book details.', 'error');
+            }
+        }
+
+        // Edit book form
+        document.getElementById('editBookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const selectedAuthors = getSelectedAuthors('editAuthorsContainer');
+            if (selectedAuthors.length === 0) {
+                alert('Please enter at least one author');
+                return;
+            }
+            
+            const bookId = document.getElementById('editBookId').value;
+            const formData = {
+                title: document.getElementById('editBookTitle').value,
+                authors: selectedAuthors,
+                isbn: document.getElementById('editBookIsbn').value,
+                publisher: document.getElementById('editBookPublisher').value,
+                publication_year: document.getElementById('editBookYear').value,
+                genre: document.getElementById('editBookGenre').value,
+                description: document.getElementById('editBookDescription').value,
+                total_copies: document.getElementById('editBookCopies').value,
+                location: document.getElementById('editBookLocation').value
+            };
+
+            try {
+                const response = await fetch(`/api/admin/books/${bookId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('Book updated successfully!');
+                    closeModal('editBookModal');
+                    loadBooks();
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Failed to update book. Please try again.', 'error');
+            }
+        });
+
+        async function deleteBook(bookId) {
+            if (!confirm('Are you sure you want to delete this book?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/books/${bookId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('Book deleted successfully!');
+                    loadBooks();
+                    loadStatistics();
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Failed to delete book. Please try again.', 'error');
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('currentAdmin');
+            hideAdminInterface();
+            showAlert('Logged out successfully.');
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
