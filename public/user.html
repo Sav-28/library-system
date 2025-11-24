@@ -640,7 +640,7 @@
                                     ${book.availability_status}
                                 </div>
                                 ${book.available_copies > 0 ? `
-                                    <button class="btn" onclick="borrowBook(${book.book_id})">
+                                    <button class="btn" onclick="window.borrowBook(${book.book_id})">
                                         <i class="fas fa-book"></i> Borrow Book
                                     </button>
                                 ` : `
@@ -658,6 +658,15 @@
         }
 
         async function borrowBook(bookId) {
+            console.log('Borrowing book with ID:', bookId);
+            console.log('Auth token present:', !!authToken);
+            
+            // Check if user is logged in
+            if (!authToken) {
+                showAlert('Please login to borrow books', 'error');
+                return;
+            }
+            
             try {
                 const response = await fetch('/api/transactions/borrow', {
                     method: 'POST',
@@ -669,19 +678,28 @@
                 });
 
                 const data = await response.json();
+                console.log('Borrow response status:', response.status);
+                console.log('Borrow response data:', data);
 
                 if (response.ok) {
                     showAlert('Book borrowed successfully!');
                     loadMyBooks();
                     // Refresh search results
-                    document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+                    const searchForm = document.getElementById('searchForm');
+                    if (searchForm) {
+                        searchForm.dispatchEvent(new Event('submit'));
+                    }
                 } else {
-                    showAlert(data.error, 'error');
+                    showAlert(data.error || 'Failed to borrow book', 'error');
                 }
             } catch (error) {
+                console.error('Error borrowing book:', error);
                 showAlert('Failed to borrow book. Please try again.', 'error');
             }
         }
+        
+        // Make borrowBook globally accessible
+        window.borrowBook = borrowBook;
 
         async function loadMyBooks() {
             try {

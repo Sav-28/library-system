@@ -230,29 +230,8 @@ SELECT
 FROM books b;
 
 -- =============================================
--- DATABASE TRIGGER FOR EMPTY BOOKS
+-- NOTIFICATION TABLE (MUST BE CREATED BEFORE TRIGGERS)
 -- =============================================
-
--- Trigger: Notify when books become empty
-DELIMITER $$
-CREATE TRIGGER tr_book_empty_notification
-AFTER UPDATE ON books
-FOR EACH ROW
-BEGIN
-    -- Check if book became empty (available_copies = 0)
-    IF NEW.available_copies = 0 AND OLD.available_copies > 0 THEN
-        -- You can customize this action based on your needs:
-        -- Option 1: Log to a notification table
-        INSERT INTO book_notifications (book_id, title, notification_type, notification_date, message)
-        VALUES (NEW.book_id, NEW.title, 'empty', NOW(), 
-                CONCAT('Book "', NEW.title, '" is now out of stock'));
-        
-        -- Option 2: You could also send an email notification here
-        -- Option 3: Update a status field to mark the book as out of stock
-    END IF;
-END$$
-
-DELIMITER ;
 
 -- Create notification table for empty books
 CREATE TABLE IF NOT EXISTS book_notifications (
@@ -272,37 +251,43 @@ CREATE INDEX idx_notifications_date ON book_notifications(notification_date);
 CREATE INDEX idx_notifications_read ON book_notifications(is_read);
 
 -- =============================================
--- ADDITIONAL TRIGGERS FOR COMPREHENSIVE NOTIFICATIONS
+-- DATABASE TRIGGER FOR BOOK NOTIFICATIONS
 -- =============================================
 
--- Trigger: Notify when books are restocked
+-- Drop existing triggers if they exist
+DROP TRIGGER IF EXISTS tr_book_empty_notification;
+DROP TRIGGER IF EXISTS tr_book_restocked_notification;
+DROP TRIGGER IF EXISTS tr_book_low_stock_notification;
+
+-- Trigger: Notify when books become unavailable (available_copies = 0)
 DELIMITER $$
-CREATE TRIGGER tr_book_restocked_notification
+CREATE TRIGGER tr_book_empty_notification
 AFTER UPDATE ON books
 FOR EACH ROW
 BEGIN
-    -- Check if book was restocked (available_copies > 0 and was previously 0)
-    IF NEW.available_copies > 0 AND OLD.available_copies = 0 THEN
+    -- Check if book became empty (available_copies = 0)
+    IF NEW.available_copies = 0 AND OLD.available_copies > 0 THEN
+        -- Insert notification into book_notifications table
         INSERT INTO book_notifications (book_id, title, notification_type, notification_date, message)
-        VALUES (NEW.book_id, NEW.title, 'restocked', NOW(), 
-                CONCAT('Book "', NEW.title, '" has been restocked (', NEW.available_copies, ' copies available)'));
+        VALUES (NEW.book_id, NEW.title, 'empty', NOW(), 
+                CONCAT('Book "', NEW.title, '" is now out of stock'));
     END IF;
 END$$
 
--- Trigger: Notify when books are running low (less than 2 copies)
+-- Trigger: Notify when books are running low (available_copies < 2)
 CREATE TRIGGER tr_book_low_stock_notification
 AFTER UPDATE ON books
 FOR EACH ROW
 BEGIN
-    -- Check if book is running low (available_copies <= 2 and was previously > 2)
-    IF NEW.available_copies <= 2 AND OLD.available_copies > 2 AND NEW.available_copies > 0 THEN
+    -- Check if book is running low (available_copies < 2 and was previously >= 2)
+    IF NEW.available_copies < 2 AND OLD.available_copies >= 2 AND NEW.available_copies > 0 THEN
         INSERT INTO book_notifications (book_id, title, notification_type, notification_date, message)
         VALUES (NEW.book_id, NEW.title, 'low_stock', NOW(), 
                 CONCAT('Book "', NEW.title, '" is running low (', NEW.available_copies, ' copies remaining)'));
     END IF;
 END$$
-
 DELIMITER ;
+
 
 -- =============================================
 -- VIEWS FOR NOTIFICATION MANAGEMENT

@@ -278,16 +278,49 @@ app.post('/api/transactions/borrow', authenticateToken, async (req, res) => {
             [user_id, book_id, due_date]
         );
 
-        // Update available copies
-        await db.promise().execute(
-            'UPDATE books SET available_copies = available_copies - 1 WHERE book_id = ?',
-            [book_id]
-        );
+        // Update available copies - use explicit value calculation to avoid trigger issues
+        const newAvailableCopies = Math.max(0, books[0].available_copies - 1);
+        
+        // Try to update with error handling for trigger/strict mode issues
+        try {
+            await db.promise().execute(
+                'UPDATE books SET available_copies = ? WHERE book_id = ?',
+                [newAvailableCopies, book_id]
+            );
+        } catch (updateError) {
+            // If error is about 'author' field, try disabling strict mode temporarily
+            if (updateError.message && updateError.message.includes('author')) {
+                console.warn('Author field error detected, attempting workaround...');
+                // Try with explicit column list to avoid trigger issues
+                await db.promise().execute(
+                    'UPDATE books SET available_copies = ?, updated_at = NOW() WHERE book_id = ?',
+                    [newAvailableCopies, book_id]
+                );
+            } else {
+                throw updateError; // Re-throw if it's a different error
+            }
+        }
 
         res.json({ message: 'Book borrowed successfully' });
     } catch (error) {
         console.error('Borrow book error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error details:', {
+            message: error.message,
+            code: error.code,
+            errno: error.errno,
+            sqlState: error.sqlState,
+            sqlMessage: error.sqlMessage
+        });
+        
+        // Return user-friendly error message
+        let errorMessage = 'Failed to borrow book';
+        if (error.message && error.message.includes('author')) {
+            errorMessage = 'Database configuration error. Please contact administrator.';
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        res.status(500).json({ error: errorMessage });
     }
 });
 
@@ -454,10 +487,26 @@ app.put('/api/admin/books/:id', authenticateToken, requireAdmin, async (req, res
         const { isbn, title, authors, publisher, publication_year, genre, description, total_copies, location } = req.body;
         const book_id = req.params.id;
 
-        // Update book (without author column)
+        // Get current book info to preserve total_copies and available_copies
+        const [currentBooks] = await db.promise().execute(
+            'SELECT total_copies, available_copies FROM books WHERE book_id = ?',
+            [book_id]
+        );
+
+        if (currentBooks.length === 0) {
+            return res.status(404).json({ error: 'Book not found' });
+        }
+
+        const currentBook = currentBooks[0];
+        // Preserve original total_copies and available_copies - do not allow editing them
+        // This prevents indirect manipulation of available copies
+        const preservedTotalCopies = currentBook.total_copies;
+        const preservedAvailableCopies = currentBook.available_copies;
+
+        // Update book (without author column) - preserve total_copies and available_copies
         await db.promise().execute(
-            'UPDATE books SET isbn = ?, title = ?, publisher = ?, publication_year = ?, genre = ?, description = ?, total_copies = ?, location = ? WHERE book_id = ?',
-            [isbn, title, publisher, publication_year, genre, description, total_copies, location, book_id]
+            'UPDATE books SET isbn = ?, title = ?, publisher = ?, publication_year = ?, genre = ?, description = ?, total_copies = ?, available_copies = ?, location = ? WHERE book_id = ?',
+            [isbn, title, publisher, publication_year, genre, description, preservedTotalCopies, preservedAvailableCopies, location, book_id]
         );
 
         // Remove existing author relationships
